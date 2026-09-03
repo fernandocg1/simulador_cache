@@ -13,36 +13,36 @@ struct CacheLine {
 
 void simularCache(string trace_file, int capacidade, int tamanho_bloco) {
     
-    int num_linhas = capacidade / tamanho_bloco;
-    int offset_bits = log2(tamanho_bloco);
-    int index_bits = log2(num_linhas);
+    int num_linhas = capacidade / tamanho_bloco; //quantidade de linhas na cache
+    int offset_bits = log2(tamanho_bloco); //quantidade de bits para o deslocamento, feito com log2 do tamanho do bloco
+    int index_bits = log2(num_linhas); // quantidade de bits para saber a linha da cache
     
-    unsigned int index_mask = num_linhas - 1;
+    unsigned int index_mask = num_linhas - 1; // aqui é massa porque a quantidade de linhas é sempre potencia de 2, então a mascara vai ser sempre 2^n - 1
+    //ela serve para pegar os bits do meio do endereço, que são os bits de index
 
     vector<CacheLine> cache(num_linhas);
 
+    //abrindo o arquivo de trace
     ifstream file(trace_file);
     if (!file.is_open()) {
         cout << "Arquivo " << trace_file << " nao encontrado" << endl;
         return;
     }
-
+    //variaveis para contagem de hits e misses
     int hits = 0;
     int misses = 0;
     unsigned int endereco;
 
     while (file >> endereco) {
-        
-        // Aplica o deslocamento usando a variavel dinamica 'offset_bits'
+        //aqui é feito o deslocamento do endereço para pegar o bloco, e depois é feito a mascara para pegar o index, e por fim é feito o deslocamento para pegar a tag, 
+        //a tag é o que sobra do endereço depois de pegar o bloco e o index
         unsigned int endereco_bloco = endereco >> offset_bits;
         
-        // Aplica a mascara dinamica 'index_mask'
         unsigned int indice = endereco_bloco & index_mask;
         
-        // Pega a Tag empurrando pro lado a quantidade dinamica de 'index_bits'
         unsigned int tag = endereco_bloco >> index_bits;
 
-        // Checagem de Hit e Miss (a logica e sempre identica!)
+        // checa os hits e os misses
         if (cache[indice].valid == true && cache[indice].tag == tag) {
             hits++;
         } else {
@@ -53,6 +53,7 @@ void simularCache(string trace_file, int capacidade, int tamanho_bloco) {
     }
     file.close();
 
+    //exibindo os resultados
     int total = hits + misses;
     if (total == 0) return;
     
@@ -62,25 +63,25 @@ void simularCache(string trace_file, int capacidade, int tamanho_bloco) {
     cout << "Cache " << capacidade << "W, Bloco " << tamanho_bloco << "W | ";
     cout << "Hits: " << hit_rate << "% | Misses: " << miss_rate << "%" << endl;
 }
-
+//chamando a funcao de simulacao
 int main() {
     cout << "========= RESULTADOS TRACE 1 (Acesso por Linha) =========" << endl;
-    simularCache("trace_address1.dat", 128, 16); // Tarefa 1
-    simularCache("trace_address1.dat", 128, 32); // Tarefa 2
-    simularCache("trace_address1.dat", 256, 16); // Tarefa 3
-    simularCache("trace_address1.dat", 256, 32); // Tarefa 4
-    simularCache("trace_address1.dat", 512, 16); // Tarefa 5
-    simularCache("trace_address1.dat", 512, 32); // Tarefa 6
-    simularCache("trace_address1.dat", 512, 64); // Tarefa 7
+    simularCache("trace_address1.dat", 128, 16);
+    simularCache("trace_address1.dat", 128, 32);
+    simularCache("trace_address1.dat", 256, 16);
+    simularCache("trace_address1.dat", 256, 32);
+    simularCache("trace_address1.dat", 512, 16);
+    simularCache("trace_address1.dat", 512, 32);
+    simularCache("trace_address1.dat", 512, 64);
     
     cout << "\n========= RESULTADOS TRACE 2 (Acesso por Coluna) =========" << endl;
-    simularCache("trace_address2.dat", 128, 16); // Tarefa 1
-    simularCache("trace_address2.dat", 128, 32); // Tarefa 2
-    simularCache("trace_address2.dat", 256, 16); // Tarefa 3
-    simularCache("trace_address2.dat", 256, 32); // Tarefa 4
-    simularCache("trace_address2.dat", 512, 16); // Tarefa 5
-    simularCache("trace_address2.dat", 512, 32); // Tarefa 6
-    simularCache("trace_address2.dat", 512, 64); // Tarefa 7
+    simularCache("trace_address2.dat", 128, 16);
+    simularCache("trace_address2.dat", 128, 32);
+    simularCache("trace_address2.dat", 256, 16);
+    simularCache("trace_address2.dat", 256, 32);
+    simularCache("trace_address2.dat", 512, 16);
+    simularCache("trace_address2.dat", 512, 32);
+    simularCache("trace_address2.dat", 512, 64);
 
     return 0;
 }
