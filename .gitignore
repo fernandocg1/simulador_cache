@@ -1,0 +1,12 @@
+# Executáveis compilados
+*.exe
+*.out
+*.app
+
+# Arquivos de objetos
+*.o
+*.obj
+
+# Arquivos temporários do Windows/VS Code
+.vscode/
+*.log
